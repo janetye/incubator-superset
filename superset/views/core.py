@@ -551,13 +551,13 @@ class DashboardModelView(SupersetModelView, DeleteMixin):  # noqa
     add_title = _('Add Dashboard')
     edit_title = _('Edit Dashboard')
 
-    list_columns = ['dashboard_link', 'creator', 'modified']
+    list_columns = ['dashboard_link', 'creator', 'tags', 'modified']
     order_columns = ['modified']
     edit_columns = [
-        'dashboard_title', 'slug', 'owners', 'position_json', 'css',
+        'dashboard_title', 'slug', 'owners', 'tags', 'position_json', 'css',
         'json_metadata']
     show_columns = edit_columns + ['table_names', 'slices']
-    search_columns = ('dashboard_title', 'slug', 'owners')
+    search_columns = ('dashboard_title', 'slug', 'owners', 'tags')
     add_columns = edit_columns
     base_order = ('changed_on', 'desc')
     description_columns = {
@@ -577,6 +577,7 @@ class DashboardModelView(SupersetModelView, DeleteMixin):  # noqa
             'is exposed here for reference and for power users who may '
             'want to alter specific parameters.'),
         'owners': _('Owners is a list of users who can alter the dashboard.'),
+        'tags': _('Tags is a list of tags.'),
     }
     base_filters = [['slice', DashboardFilter, lambda: []]]
     label_columns = {
@@ -585,6 +586,7 @@ class DashboardModelView(SupersetModelView, DeleteMixin):  # noqa
         'slug': _('Slug'),
         'slices': _('Charts'),
         'owners': _('Owners'),
+        'tags': _('Tags'),
         'creator': _('Creator'),
         'modified': _('Modified'),
         'position_json': _('Position JSON'),

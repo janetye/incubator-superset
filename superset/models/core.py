@@ -76,6 +76,7 @@ def copy_dashboard(mapper, connection, target):
         json_metadata=template.json_metadata,
         slices=template.slices,
         owners=[new_user],
+        tags=[],
     )
     session.add(dashboard)
     session.commit()
@@ -362,6 +363,24 @@ dashboard_user = Table(
     Column('dashboard_id', Integer, ForeignKey('dashboards.id')),
 )
 
+dashboard_tags = Table(
+    'dashboard_tags', metadata,
+    Column('id', Integer, primary_key=True),
+    Column('tag_id', Integer, ForeignKey('tags.id')),
+    Column('dashboard_id', Integer, ForeignKey('dashboards.id')),
+)
+
+
+class Tag(Model):
+
+    """The tag object!"""
+
+    __tablename__ = 'tags'
+    id = Column(Integer, primary_key=True)
+    tag_name = Column(String(255))
+
+    def __repr__(self):
+        return self.tag_name
 
 class Dashboard(Model, AuditMixinNullable, ImportMixin):
 
@@ -378,6 +397,8 @@ class Dashboard(Model, AuditMixinNullable, ImportMixin):
     slices = relationship(
         'Slice', secondary=dashboard_slices, backref='dashboards')
     owners = relationship(security_manager.user_model, secondary=dashboard_user)
+    tags = relationship(
+        'Tag', secondary=dashboard_tags)
 
     export_fields = ('dashboard_title', 'position_json', 'json_metadata',
                      'description', 'css', 'slug')
