@@ -19,7 +19,8 @@ def upgrade():
     op.create_table('tags',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('tag_name', sa.String(length=255), nullable=True),
-        sa.PrimaryKeyConstraint('id')
+        sa.PrimaryKeyConstraint('id'),
+        sa.UniqueConstraint('tag_name'),
     )
     op.create_table('dashboard_tags',
         sa.Column('id', sa.Integer(), nullable=False),

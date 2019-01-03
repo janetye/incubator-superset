@@ -377,7 +377,7 @@ class Tag(Model):
 
     __tablename__ = 'tags'
     id = Column(Integer, primary_key=True)
-    tag_name = Column(String(255))
+    tag_name = Column(String(255), unique=True)
 
     def __repr__(self):
         return self.tag_name
