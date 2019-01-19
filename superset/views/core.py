@@ -560,7 +560,19 @@ class TagModelView(SupersetModelView, DeleteMixin):
     }
 
     def pre_delete(self, obj):
-        pass
+        current_tag_id = obj.id
+        qry = (
+	    db.session.query(
+	        models.dashboard_tags
+	    )
+	    .filter_by(
+	        tag_id=current_tag_id
+            )
+	    .count()
+	)
+        if qry > 0:
+            raise SupersetException(Markup(
+                'Cannot delete a tag that has {} dashboard(s) attached.'.format(qry)))
 
 
 appbuilder.add_view(

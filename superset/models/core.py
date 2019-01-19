@@ -377,7 +377,9 @@ class Tag(Model):
 
     __tablename__ = 'tags'
     id = Column(Integer, primary_key=True)
-    tag_name = Column(String(255))
+    __table_args__ = (UniqueConstraint('tag_name'),)
+
+    tag_name = Column(String(255), unique=True)
 
     def __repr__(self):
         return self.tag_name
@@ -398,7 +400,7 @@ class Dashboard(Model, AuditMixinNullable, ImportMixin):
         'Slice', secondary=dashboard_slices, backref='dashboards')
     owners = relationship(security_manager.user_model, secondary=dashboard_user)
     tags = relationship(
-        'Tag', secondary=dashboard_tags)
+        'Tag', secondary=dashboard_tags, backref='dashboards')
 
     export_fields = ('dashboard_title', 'position_json', 'json_metadata',
                      'description', 'css', 'slug')
