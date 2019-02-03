@@ -542,6 +542,49 @@ class SliceAddView(SliceModelView):  # noqa
 appbuilder.add_view_no_menu(SliceAddView)
 
 
+class TagModelView(SupersetModelView, DeleteMixin):
+    datamodel = SQLAInterface(models.Tag)
+
+    list_title = _('List Tag')
+    show_title = _('Show Tag')
+    add_title = _('Add Tag')
+    edit_title = _('Edit Tag')
+
+    list_columns = ['tag_name']
+    edit_columns = ['tag_name']
+
+    add_columns = edit_columns
+
+    label_columns = {
+        'tag_name': _('Tag Name'),
+    }
+
+    def pre_delete(self, obj):
+        current_tag_id = obj.id
+        qry = (
+	    db.session.query(
+	        models.dashboard_tags
+	    )
+	    .filter_by(
+	        tag_id=current_tag_id
+            )
+	    .count()
+	)
+        if qry > 0:
+            raise SupersetException(Markup(
+                'Cannot delete a tag that has {} dashboard(s) attached.'.format(qry)))
+
+
+appbuilder.add_view(
+    TagModelView,
+    'Tags',
+    label=__('Tags'),
+    icon='fa-tags',
+    category='Manage',
+    category_label=__('Manage'),
+    category_icon='')
+
+
 class DashboardModelView(SupersetModelView, DeleteMixin):  # noqa
     route_base = '/dashboard'
     datamodel = SQLAInterface(models.Dashboard)
@@ -2128,6 +2171,7 @@ class Superset(BaseSupersetView):
         dash_save_perm = security_manager.can_access('can_save_dash', 'Superset')
         superset_can_explore = security_manager.can_access('can_explore', 'Superset')
         slice_can_edit = security_manager.can_access('can_edit', 'SliceModelView')
+        tag_can_edit = security_manager.can_access('can_edit', 'TagModelView')
 
         standalone_mode = request.args.get('standalone') == 'true'
         edit_mode = request.args.get('edit') == 'true'
@@ -2149,6 +2193,7 @@ class Superset(BaseSupersetView):
             'dash_edit_perm': dash_edit_perm,
             'superset_can_explore': superset_can_explore,
             'slice_can_edit': slice_can_edit,
+            'tag_can_edit': tag_can_edit,
         })
 
         bootstrap_data = {
