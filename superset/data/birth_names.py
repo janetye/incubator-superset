@@ -15,7 +15,9 @@ from .helpers import (
     DATA_FOLDER,
     get_slice_json,
     merge_slice,
+    reset_tag ,
     Slice,
+    Tag,
     TBL,
     update_slice_ids,
 )
@@ -598,5 +600,13 @@ def load_birth_names():
     dash.dashboard_title = 'Births'
     dash.position_json = json.dumps(pos, indent=4)
     dash.slug = 'births'
+    tags = [
+        Tag(tag_name='example-dashboard'),
+        Tag(tag_name='example-tag'),
+    ]
+    # Unlike slices we have a uniqueness constraint on tags, so need to clear them out manually here
+    for t in tags:
+        reset_tag(t)
+    dash.tags = tags
     db.session.merge(dash)
     db.session.commit()

@@ -11,6 +11,7 @@ from superset.models import core as models
 DB = models.Database
 Slice = models.Slice
 Dash = models.Dashboard
+Tag = models.Tag
 
 TBL = ConnectorRegistry.sources['table']
 
@@ -44,3 +45,10 @@ def get_slice_json(defaults, **kwargs):
     d = defaults.copy()
     d.update(kwargs)
     return json.dumps(d, indent=4, sort_keys=True)
+
+
+def reset_tag(tag):
+    o = db.session.query(Tag).filter_by(tag_name=tag.tag_name).first()
+    if o:
+        db.session.delete(o)
+    db.session.commit()
